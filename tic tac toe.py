@@ -1,5 +1,4 @@
-import random
-import time
+import random, time
 
 
 def display_board(current_board):
@@ -36,13 +35,13 @@ def get_square(user):
     return int(next_square)
 
 
-def place_square():
+def place_square(next_square):
     global board
     number = 0
     for row in range(0, len(board), 2):
         for char in range(0, len(board[row]), 2):
             number += 1
-            if number == square:
+            if number == next_square:
                 if users[starter] == 'You':
                     board[row][char] = f' {player} '
                 else: 
@@ -50,6 +49,7 @@ def place_square():
 
 
 def check_winner(winners):
+    global player_squares, computer_squares
     win = False
     for winner in winners:
         play, comp = 0, 0
@@ -85,7 +85,7 @@ def display_winner():
 
 
 
-def update_scores():
+def show_scores():
     scores = open("tic tac toe scores.txt", 'r')
     scores_list = eval(scores.read())
     print(f"""Scores:
@@ -116,7 +116,7 @@ while not winner and attempts != 9:
     print()
     attempts += 1
     square = get_square(users[starter])
-    place_square()
+    place_square(square)
     if starter == 0:
         starter = 1
     else:
@@ -128,4 +128,4 @@ while not winner and attempts != 9:
     winner = check_winner(winning_combinations)
 
 display_winner()
-update_scores()
+show_scores()
