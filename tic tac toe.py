@@ -36,15 +36,71 @@ def get_square(user):
     return int(next_square)
 
 
+def place_square():
+    global board
+    number = 0
+    for row in range(0, len(board), 2):
+        for char in range(0, len(board[row]), 2):
+            number += 1
+            if number == square:
+                if users[starter] == 'You':
+                    board[row][char] = f' {player} '
+                else: 
+                    board[row][char] = f' {computer[0]} '
+
+
+def check_winner(winners):
+    win = False
+    for winner in winners:
+        play, comp = 0, 0
+        for num in winner:
+            if num in player_squares:
+                play += 1
+            elif num in computer_squares:
+                comp += 1
+        if play == 3:
+            win = 'Player'
+            break
+        elif comp == 3:
+            win = 'Computer'
+            break
+    return win
+
+
+def display_winner():
+    scores = open("tic tac toe scores.txt", 'r')
+    scores_list = eval(scores.read())
+    print()
+    if not winner:
+        print("Draw")
+        scores_list[1] += 1
+    else:
+        print(f"{winner} wins!")
+        if winner == 'Player':
+            scores_list[0] += 1
+        else:
+            scores_list[2] += 1
+    scores = open("tic tac toe scores.txt", 'w')
+    scores.write(str(scores_list))
+
+
+
+def update_scores():
+    scores = open("tic tac toe scores.txt", 'r')
+    scores_list = eval(scores.read())
+    print(f"""Scores:
+Player: {scores_list[0]}
+Draws: {scores_list[1]}
+Computer: {scores_list[2]}""")
+
+
 #====================================================================
 
 example_board = [[' 1 ', ' | ', ' 2 ', ' | ', ' 3 '], ['---', '---', '---', '---', '---'], [' 4 ', ' | ', ' 5 ', ' | ', ' 6 '], ['---', '---', '---', '---', '---'], [' 7 ', ' | ', ' 8 ', ' | ', ' 9 ']]
 board = [['   ', ' | ', '   ', ' | ', '   '], ['---', '---', '---', '---', '---'], ['   ', ' | ', '   ', ' | ', '   '], ['---', '---', '---', '---', '---'], ['   ', ' | ', '   ', ' | ', '   ']]
-computer = ['X', 'O']
-users = ['You', 'Computer']
+computer, users = ['X', 'O'], ['You', 'Computer']
 squares, player_squares, computer_squares = [1,2,3,4,5,6,7,8,9], [], []
-attempts = 0
-winner = False
+attempts, winner = 0, False
 winning_combinations = [[1,2,3], [4,5,6], [7,8,9], [1,4,7], [2,5,8], [3,6,9], [1,5,9], [3,5,7]]
 
 
@@ -60,57 +116,16 @@ while not winner and attempts != 9:
     print()
     attempts += 1
     square = get_square(users[starter])
-    number = 0
-    for row in range(0, len(board), 2):
-        for char in range(0, len(board[row]), 2):
-            number += 1
-            if number == square:
-                if users[starter] == 'You':
-                    board[row][char] = f' {player} '
-                else: 
-                    board[row][char] = f' {computer[0]} '
+    place_square()
     if starter == 0:
         starter = 1
     else:
         starter = 0
     print()
     display_board(board)
-    for winners in winning_combinations:
-        play, comp = 0, 0
-        for num in winners:
-            if num in player_squares:
-                play += 1
-            elif num in computer_squares:
-                comp += 1
-        if play == 3:
-            winner = 'Player'
-            break
-        elif comp == 3:
-            winner = 'Computer'
-            break
     print()
     time.sleep(1)
+    winner = check_winner(winning_combinations)
 
-scores = open("tic tac toe scores.txt", 'r')
-scores_list = eval(scores.read())
-
-print()
-if not winner:
-    print("Draw")
-    scores_list[1] += 1
-else:
-    print(f"{winner} wins!")
-    if winner == 'Player':
-        scores_list[0] += 1
-    else:
-        scores_list[2] += 1
-
-scores = open("tic tac toe scores.txt", 'w')
-scores.write(str(scores_list))
-
-scores = open("tic tac toe scores.txt", 'r')
-scores_list = eval(scores.read())
-print(f"""Scores:
-Player: {scores_list[0]}
-Draws: {scores_list[1]}
-Computer: {scores_list[2]}""")
+display_winner()
+update_scores()
